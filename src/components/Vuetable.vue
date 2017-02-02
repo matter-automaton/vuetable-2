@@ -2,7 +2,7 @@
   <table :class="['vuetable', css.tableClass]">
     <thead>
       <tr>
-        <template v-for="field in fields">
+        <template v-for="field in columns">
           <template v-if="field.visible">
             <template v-if="isSpecialField(field.name)">
               <th v-if="extractName(field.name) == '__checkbox'"
@@ -48,7 +48,7 @@
     <tbody v-cloak>
       <template v-for="(item, index) in tableData">
         <tr @dblclick="onRowDoubleClicked(item, $event)" @click="onRowClicked(item, $event)" :render="onRowChanged(item)" :class="onRowClass(item, index)">
-          <template v-for="field in fields">
+          <template v-for="field in columns">
             <template v-if="field.visible">
               <template v-if="isSpecialField(field.name)">
                 <td v-if="extractName(field.name) == '__sequence'" :class="['vuetable-sequence', field.dataClass]"
@@ -110,7 +110,7 @@ Vue.use(VueResource)
 
 export default {
   props: {
-    fields: {
+    columns: {
       type: Array,
       required: true
     },
@@ -239,21 +239,21 @@ export default {
       return this.detailRowComponent !== ''
     },
     countVisibleFields: function() {
-      return this.fields.filter(function(field) {
+      return this.columns.filter(function(field) {
         return field.visible
       }).length
     }
   },
   methods: {
     normalizeFields: function() {
-      if (typeof(this.fields) === 'undefined') {
-        this.warn('You need to provide "fields" prop.')
+      if (typeof(this.columns) === 'undefined') {
+        this.warn('You need to provide "columns" prop.')
         return
       }
 
       let self = this
       let obj
-      this.fields.forEach(function(field, i) {
+      this.columns.forEach(function(field, i) {
         if (typeof (field) === 'string') {
           obj = {
             name: field,
@@ -274,7 +274,7 @@ export default {
             visible: (field.visible === undefined) ? true : field.visible,
           }
         }
-        Vue.set(self.fields, i, obj)
+        Vue.set(self.columns, i, obj)
       })
     },
     setTitle: function(str) {
@@ -500,13 +500,13 @@ export default {
     },
     sortIconOpacity: function(field) {
       /*
-       * fields with stronger precedence have darker color
+       * columns with stronger precedence have darker color
        *
-       * if there are few fields, we go down by 0.3
-       * ex. 2 fields are selected: 1.0, 0.7
+       * if there are few columns, we go down by 0.3
+       * ex. 2 columns are selected: 1.0, 0.7
        *
        * if there are more we go down evenly on the given spectrum
-       * ex. 6 fields are selected: 1.0, 0.86, 0.72, 0.58, 0.44, 0.3
+       * ex. 6 columns are selected: 1.0, 0.86, 0.72, 0.58, 0.44, 0.3
        */
       let max = 1.0,
           min = 0.3,
